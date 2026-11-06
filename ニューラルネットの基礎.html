@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="図解と文章でニューラルネットの基本をつかむ、研究ゼミのための入門教材。時系列の入力、学習、RNN・LSTM・Transformer、評価まで。"><title>ニューラルネットの基礎 — 研究を読むための図解入門</title><style>/* デジタル庁デザインシステムを参照した独自の教材用実装。 */
+:root{--blue:#0031d8;--dark:#00118f;--pale:#e8f1fe;--ink:#1a1a1a;--muted:#595959;--line:#d9d9d9;--green:#006e54;--yellow:#ffd43d}*{box-sizing:border-box}html{font-size:16px;scroll-behavior:auto}body{margin:0;color:var(--ink);background:white;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.9;overflow-wrap:anywhere}a{color:var(--blue);text-underline-offset:.22em}a:hover{text-decoration-thickness:2px}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.45}[hidden]{display:none!important}:focus-visible{outline:3px solid #000;outline-offset:3px;box-shadow:0 0 0 5px var(--yellow)}.skip{position:fixed;top:-100px;left:20px;padding:12px 20px;background:var(--yellow);color:black;z-index:10}.skip:focus{top:12px}.topbar{min-height:96px;padding:20px 38px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:24px}.brand{display:flex;align-items:center;gap:16px;color:var(--ink);text-decoration:none;font-weight:700;line-height:1.5;font-size:1.15rem}.brand small{display:block;font-size:.8rem;color:var(--muted);font-weight:400;margin-top:4px}.brand-mark{display:grid;place-items:center;width:44px;height:44px;flex-shrink:0;background:var(--blue);color:white;font-size:1rem;letter-spacing:.04em;border-radius:3px}.header-note{font-size:.8rem;color:var(--muted)}.layout{display:grid;grid-template-columns:264px minmax(0,1fr);max-width:1480px;margin:auto}.sidebar{background:#fafafa;border-right:1px solid var(--line);height:100vh;position:sticky;top:0;padding:28px 20px 32px;overflow-y:auto}.eyebrow{font-size:.75rem;letter-spacing:.12em;color:var(--muted);margin:0 10px 18px;display:flex;justify-content:space-between}.eyebrow span{letter-spacing:0}nav{display:grid;gap:5px}nav a{display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:var(--ink);padding:13px 10px;border-left:3px solid transparent;line-height:1.55;font-size:.875rem}nav a:hover{background:#efefef}nav a[aria-current]{border-color:var(--blue);background:var(--pale);color:var(--dark)}nav a[aria-current] .nav-title{font-weight:700}nav small{display:block;color:var(--muted);font-size:.73rem;margin-top:5px}.nav-number{font-size:.75rem;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}.nav-check{margin-left:auto;color:var(--green);font-size:.8rem}.nav-divider{border-top:1px solid var(--line);margin:14px 10px 8px}.progress-box{margin:22px 10px 0;border-top:1px solid var(--line);padding-top:20px}.progress-box label{display:flex;justify-content:space-between;gap:12px;font-size:.8rem}.progress-box strong{font-variant-numeric:tabular-nums}progress{width:100%;height:6px;display:block;margin:10px 0;appearance:none;border:0;background:#ddd}progress::-webkit-progress-bar{background:#ddd}progress::-webkit-progress-value{background:var(--blue)}progress::-moz-progress-bar{background:var(--blue)}#save-status{font-size:.72rem;line-height:1.6;color:var(--muted);min-height:2.3em;margin:0}.sidebar-note{font-size:.75rem;color:var(--muted);margin:24px 10px 12px}.text-button{border:0;background:transparent;color:var(--blue);font-size:.8rem;padding:8px 10px;text-decoration:underline;text-underline-offset:.2em;min-height:44px}main{min-width:0;max-width:1120px;padding:42px 58px 0}main:focus{outline:none}.chapter-meta{font-size:.75rem;letter-spacing:.08em;font-weight:700;color:var(--blue);display:flex;gap:20px;margin-bottom:18px}.chapter-meta .time{margin-left:auto;color:var(--muted);font-weight:400;letter-spacing:0}h1{font-size:clamp(2rem,3.6vw,3rem);line-height:1.45;letter-spacing:.025em;margin:0 0 22px;font-weight:700}h2{font-size:1.4rem;line-height:1.6;letter-spacing:.015em;margin:46px 0 18px}h3{font-size:1.06rem;line-height:1.7;margin:0 0 12px}p{margin:0 0 19px}.lead{font-size:1.04rem;color:#414141;line-height:1.95;max-width:46em}.intro-meta{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:.73rem;color:var(--muted);margin:25px 0}.intro-meta span+span:before{content:"／";margin-right:16px;color:#aaa}.figure-label{font-size:.75rem;letter-spacing:.06em;font-weight:700;color:var(--blue);margin-bottom:15px}figure{margin:32px 0;background:#f5f8fc;border:1px solid #d6e0ed;border-radius:4px;padding:24px 24px 20px}figure svg{display:block;width:100%;height:auto;overflow:visible}figcaption,.caption{font-size:.8rem;color:var(--muted);line-height:1.8;margin:14px 0 0}figcaption{border-top:1px solid #d6e0ed;padding-top:14px}.callout{background:var(--pale);border-left:4px solid var(--blue);padding:20px 24px;margin:28px 0}.callout strong{color:var(--dark);font-size:1rem}.callout p{margin:8px 0 0;font-size:.94rem}.flow{display:grid;grid-template-columns:1fr 25px 1fr 25px 1fr;align-items:center;margin:28px 0;gap:8px}.flow>div{border:1px solid #a8b4c5;padding:19px 12px;text-align:center;border-radius:4px;line-height:1.8}.flow small{display:block;color:var(--muted);font-size:.8rem;margin-bottom:9px}.flow b{font-size:.9rem}.flow>span{text-align:center;color:var(--blue)}.flow .blue{background:var(--pale);border-color:var(--blue)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:28px 0}.two-col article{border-top:3px solid var(--blue);background:#f7f7f7;padding:22px}.two-col p{font-size:.94rem;margin-bottom:0}.seminar{margin:32px 0;padding:24px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.small-label{display:block;color:var(--blue);font-size:.75rem;font-weight:700;letter-spacing:.06em;margin-bottom:10px}blockquote{margin:0 0 14px;font-size:1.12rem;line-height:1.85;font-weight:700}.seminar p{margin:0;font-size:.94rem}.self-check{background:#fafafa;border:1px solid var(--line);margin:28px 0}details{border-top:1px solid #949494;border-bottom:1px solid #949494;margin:26px 0}summary{cursor:pointer;padding:18px 16px;font-size:.94rem;font-weight:700;line-height:1.7}summary:hover{background:#f0f4fa}details[open] summary{border-bottom:1px solid var(--line)}details p{font-size:.94rem}.self-check summary{padding:18px 22px}.self-check .small-label{display:inline;margin-right:12px}.self-check p{padding:20px 22px;margin:0}.detail-body{padding:20px}.detail-body p:last-child{margin-bottom:0}.formula{border:1px solid #cbd7eb;background:#f5f8fc;padding:20px;text-align:center;font-size:1.1rem;line-height:2.1;font-family:ui-monospace,monospace;margin:8px 0 20px;overflow-wrap:anywhere}.table-wrap{overflow-x:auto;margin:26px 0}table{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.8;text-align:left}caption{text-align:left;font-size:.8rem;color:var(--muted);margin-bottom:12px}th,td{border-bottom:1px solid var(--line);padding:14px 16px;vertical-align:top}thead th{background:#f3f5f7;border-top:1px solid #949494;border-bottom:1px solid #949494}tbody th{min-width:120px;font-weight:700;background:#fafafa}td{min-width:135px}.shape{display:flex;justify-content:center;align-items:center;gap:30px;padding:24px 12px;border:1px solid var(--line);margin:24px 0}.shape div{text-align:center}.shape b{display:block;font-size:2.7rem;line-height:1.4;color:var(--blue);font-variant-numeric:tabular-nums}.shape span{display:block;font-size:1rem;font-weight:700}.shape small{display:block;color:var(--muted);font-size:.75rem;margin-top:5px}.shape i{font-style:normal;color:#999;font-size:1.5rem}.gate-flow{display:flex;align-items:center;gap:10px;margin:30px 0;line-height:1.6}.gate-flow>div{flex:1;border:1px solid #a8b4c5;border-radius:4px;padding:16px 10px;text-align:center}.gate-flow small{display:block;color:var(--muted);font-size:.75rem;margin-bottom:7px}.gate-flow b{font-size:.85rem}.gate-flow .gate{background:var(--pale)}.reading-list{list-style:none;counter-reset:read;padding:0;margin:25px 0}.reading-list li{counter-increment:read;position:relative;border-bottom:1px solid var(--line);padding:18px 0 18px 48px}.reading-list li:before{content:counter(read,decimal-leading-zero);position:absolute;left:0;top:20px;color:var(--blue);font-size:.8rem;font-weight:700}.reading-list p{font-size:.9rem;margin:5px 0 0;color:var(--muted)}.abstract{font-size:1rem;font-weight:400;background:#f5f8fc;border-left:4px solid var(--blue);padding:24px}.references{font-size:.72rem;line-height:1.85;color:var(--muted);margin-top:36px;overflow-wrap:anywhere}.references a{display:inline}.chapter-end{border-top:1px solid var(--line);margin:34px 0 0;padding-top:24px}.end-top{display:flex;align-items:center;justify-content:space-between;gap:20px}.complete-button,.primary{border:1px solid var(--blue);min-height:48px;padding:10px 20px;border-radius:6px;font-weight:700;font-size:.9rem;line-height:1.6}.complete-button{background:white;color:var(--blue)}.complete-button[aria-pressed=true]{background:#edf8f3;color:var(--green);border-color:var(--green)}.primary{background:var(--blue);color:white;display:inline-flex;align-items:center;gap:30px;text-decoration:none}.primary:hover{background:var(--dark);text-decoration:underline}.prev-link{font-size:.8rem}.completion-note{font-size:.75rem;color:var(--muted);margin:14px 0 0}.search-label{display:block;font-weight:700;font-size:.9rem;margin:28px 0 8px}.search-input{width:100%;border:1px solid #777;border-radius:4px;min-height:48px;padding:10px 14px;background:white;color:var(--ink)}.search-count{font-size:.8rem;color:var(--muted);margin:12px 0 24px}.glossary-item{padding:23px 0;border-top:1px solid var(--line)}.glossary-item h2{font-size:1.15rem;margin:0}.glossary-item .alias{font-size:.8rem;color:var(--muted);margin:4px 0 10px}.glossary-item p{font-size:.94rem;margin-bottom:10px}.glossary-item a{font-size:.8rem}.source-list{padding-left:24px}.source-list li{margin-bottom:22px}.source-list p{font-size:.85rem;color:var(--muted);margin:5px 0 0}footer{font-size:.72rem;line-height:1.9;color:var(--muted);border-top:1px solid var(--line);margin-top:60px;padding:24px 0 36px}footer span{margin-left:20px}.noscript{padding:30px;background:#fff1f0}
+.nav-number{flex:0 0 20px;white-space:nowrap}.nav-check{flex-shrink:0}
+@media(min-width:1400px){main{padding-left:76px;padding-right:76px}}
+@media(max-width:1100px){.layout{grid-template-columns:235px minmax(0,1fr)}main{padding:36px 32px 0}.sidebar{padding-left:12px;padding-right:12px}.gate-flow{flex-wrap:wrap}.gate-flow>div{min-width:115px}.shape{gap:18px}figure{padding:20px}}
+@media(max-width:760px){.topbar{min-height:82px;padding:16px 20px}.brand{font-size:1rem;gap:12px}.brand small{font-size:.7rem}.header-note{display:none}.layout{display:block}.sidebar{height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);padding:18px 16px}.eyebrow{margin:0 4px 10px}nav{display:flex;overflow-x:auto;gap:6px;padding:4px}nav a{white-space:nowrap;flex-shrink:0;border-left:0;border-bottom:3px solid transparent;padding:10px 12px;gap:9px}nav small,.nav-divider,.sidebar-note{display:none}.nav-check{margin-left:6px}.progress-box{border:0;padding:0;margin:14px 4px 0}.progress-box label{font-size:.75rem}#save-status{min-height:0}.sidebar .text-button{display:none}main{padding:28px 20px 0}h1{font-size:2rem}h2{font-size:1.25rem;margin-top:36px}.lead{font-size:1rem}.chapter-meta{font-size:.7rem}.intro-meta{gap:6px 10px}.intro-meta span+span:before{margin-right:8px}figure{padding:18px 12px;margin:26px 0}.figure-label{font-size:.68rem}figure svg{min-width:560px}.figure-label+svg{margin-top:8px}figure{overflow-x:auto}.flow{grid-template-columns:1fr}.flow>span{transform:rotate(90deg);line-height:1}.flow>div{padding:12px}.flow b br{display:none}.flow small{margin-bottom:3px}.two-col{grid-template-columns:1fr;gap:16px}.two-col article{padding:20px}.callout{padding:18px 20px}.shape{gap:12px;padding:20px 8px}.shape b{font-size:2rem}.shape small{font-size:.66rem}.shape i{font-size:1rem}.shape span{font-size:.85rem}.gate-flow{display:grid;grid-template-columns:1fr}.gate-flow>span{text-align:center;line-height:1.1}.gate-flow>div{padding:12px}.end-top{flex-wrap:wrap}.primary{flex:1;justify-content:center;min-width:130px}.complete-button{flex:1;min-width:160px}th,td{padding:12px}.self-check .small-label{display:block}.detail-body{padding:16px}.formula{font-size:.95rem}.table-wrap{margin:22px 0}.prev-link{width:100%}footer span{display:block;margin:2px 0}blockquote{font-size:1.05rem}}
+@media print{body{font-size:10pt;line-height:1.75}.topbar{padding:12px 0;min-height:60px}.brand-mark,.header-note,.sidebar,.skip,.chapter-end,.search-label,.search-input,.search-count,footer{display:none!important}.layout{display:block}main{padding:0;max-width:none}section.lesson,section.lesson[hidden]{display:block!important;break-before:page}section.lesson:first-child{break-before:auto}h1{font-size:25pt}h2{font-size:16pt;break-after:avoid}figure,table,.callout,.seminar,.glossary-item{break-inside:avoid}figure svg{min-width:0;max-height:210px}figure{padding:15px}.two-col{display:grid;grid-template-columns:1fr 1fr}.flow{display:grid;grid-template-columns:1fr 20px 1fr 20px 1fr}.flow>span{transform:none}.intro-meta{font-size:9pt}a{color:#222}details{display:block}details::details-content{content-visibility:visible!important;height:auto!important}details>*:not(summary){display:block!important}summary{list-style:none}.glossary-item[hidden]{display:block!important}.print-source-url{font-size:8pt;overflow-wrap:anywhere}figure svg{width:100%}}
+</style></head>
+<body>
+<a class="skip" href="#main">本文へ移動</a>
+<header class="topbar"><a class="brand" href="#overview"><span class="brand-mark" aria-hidden="true">NN</span><span>ニューラルネットの基礎<small>研究を読むための図解入門</small></span></a><span class="header-note">時系列データから理解する</span></header>
+<div class="layout"><aside class="sidebar"><p class="eyebrow">CONTENTS <span>全6章</span></p><nav id="chapter-nav" aria-label="教材の目次"></nav><div class="progress-box"><label for="progress">読み終えた章 <strong id="progress-text">0 / 6</strong></label><progress id="progress" value="0" max="6"></progress><p id="save-status" role="status"></p></div><p class="sidebar-note">1章ずつ、自分のペースで。<br>分からない言葉は用語集へ。</p><button id="print" class="text-button">全章を印刷する</button></aside>
+<main id="main" tabindex="-1"><div id="lesson-root"></div><footer>個人用学習教材 <span>2026年11月5日作成</span><br>図と数値は説明用です。出典リンクを除き、インターネット接続なしで読めます。</footer></main></div>
+<noscript><p class="noscript">この教材の表示にはJavaScriptを有効にしてください。外部通信は行いません。</p></noscript>
+<script>// 教材独自の模式図。実データ・学習済みモデルの結果ではありません。
+let diagramId = 0;
+const svg = (title, desc, body, height = 270) => {
+ const id = `figure-${++diagramId}`;
+ return `<svg viewBox="0 0 760 ${height}" role="img" aria-labelledby="${id}-title ${id}-desc" xmlns="http://www.w3.org/2000/svg"><title id="${id}-title">${title}</title><desc id="${id}-desc">${desc}</desc><defs><marker id="${id}-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#536888"/></marker></defs><g font-family="sans-serif" font-size="17" fill="#1a1a1a">${body.replaceAll('ARROW', `${id}-arrow`)}</g></svg>`;
+};
+const line = (x1,y1,x2,y2,extra='') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#8294af" stroke-width="2" ${extra}/>`;
+const arrow = (x1,y1,x2,y2) => line(x1,y1,x2,y2,'marker-end="url(#ARROW)"');
+const txt = (x,y,s,extra='') => `<text x="${x}" y="${y}" text-anchor="middle" ${extra}>${s}</text>`;
+const box = (x,y,w,h,s,fill='#fff') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${fill}" stroke="#8294af"/>${txt(x+w/2,y+h/2+6,s)}`;
+const fig = (label, picture, caption) => `<figure><div class="figure-label">${label}</div>${picture}<figcaption>${caption}</figcaption></figure>`;
+function networkDiagram(){
+ const layers = [[110,[88,160,232]],[330,[65,125,185,245]],[540,[95,160,225]],[690,[160]]];
+ let body='';
+ for(let i=0;i<layers.length-1;i++) for(const y of layers[i][1]) for(const z of layers[i+1][1]) body+=line(layers[i][0]+14,y,layers[i+1][0]-14,z,'opacity=".52"');
+ layers.forEach(([x,ys],i)=>ys.forEach(y=>body+=`<circle cx="${x}" cy="${y}" r="17" fill="${i===3?'#0031d8':i===0?'#fff':'#e8f1fe'}" stroke="#0031d8" stroke-width="2"/>`));
+ body+=txt(110,30,'入力')+txt(435,30,'隠れ層：情報を加工する')+txt(690,30,'出力');
+ body+=txt(110,290,'過去の測定値')+txt(435,290,'重み付きの計算 ＋ 活性化関数')+txt(690,290,'翌日の予測');
+ return svg('層を通って予測ができるまで','左の入力から、2つの隠れ層を経て、右の出力へ進む。線は重みを持つ接続、丸は計算の単位。実際の入力数は第4章で整理する。',body,320);
+}
+const neuronDiagram = () => svg('1つのニューロンの計算','2つの入力に、それぞれ重みを掛け、足してバイアスを加え、活性化関数を適用する。',
+ box(20,55,125,56,'入力 x₁')+box(20,165,125,56,'入力 x₂')+arrow(145,83,300,119)+arrow(145,193,300,153)+txt(210,74,'× w₁')+txt(210,218,'× w₂')+box(310,100,140,70,'足す ＋ b','#e8f1fe')+arrow(450,135,500,135)+box(510,100,145,70,'活性化関数')+arrow(655,135,725,135)+txt(700,100,'出力 h')+txt(385,215,'まず、重み付きの和')+txt(580,215,'次に、形を変える'),260);
+const reluDiagram = () => svg('ReLUのグラフ','横軸は入力z、縦軸は出力h。zが0以下なら0、正ならzをそのまま出す。',
+ arrow(110,200,660,200)+arrow(370,230,370,28)+`<path d="M130 200H370L580 48" fill="none" stroke="#0031d8" stroke-width="5"/>`+txt(370,253,'0')+txt(640,230,'入力 z')+txt(420,42,'出力 h')+txt(210,155,'負の値 → 0')+txt(575,110,'正の値 → そのまま'),280);
+const trainDiagram = () => svg('学習の4段階','順伝播で予測を計算し、損失を求め、逆伝播で勾配を計算し、最適化手法で重みを更新する。更新した重みで再び予測する。',
+ box(15,65,155,88,'① 予測する','#e8f1fe')+arrow(170,109,195,109)+box(205,65,155,88,'② 損失を求める')+arrow(360,109,385,109)+box(395,65,155,88,'③ 勾配を求める')+arrow(550,109,575,109)+box(585,65,155,88,'④ 重みを更新')+`<path d="M665 153V211H92V163" fill="none" stroke="#8294af" stroke-width="2" marker-end="url(#ARROW)"/>`+txt(380,246,'同じ手順を、訓練データで繰り返す'),280);
+const windowDiagram = () => svg('過去7日間から翌日を予測','1日目から7日目の室温・湿度・電力量を入力し、8日目の電力量を予測する。1日ずらすと、2日目から8日目が入力、9日目が目標になる。',
+ Array.from({length:9},(_,i)=>box(16+i*82,55,72,50,`${i+1}日目`,i<7?'#e8f1fe':'#fff')).join('')+
+ `<path d="M20 119V135H579V119" fill="none" stroke="#0031d8" stroke-width="3"/>`+txt(295,164,'入力：7日 × 3項目')+arrow(592,135,660,135)+txt(658,164,'目標：8日目')+
+ `<path d="M102 200V216H661V200" fill="none" stroke="#006e54" stroke-width="3"/>`+txt(380,246,'次のサンプル：入力を1日ずらす')+arrow(673,216,737,216),275);
+const rnnDiagram = () => svg('RNNを時間方向に展開した図','各時点で同じ処理を使い、現在の入力と前の隠れ状態から新しい隠れ状態を作る。最後の隠れ状態から翌日を予測する例。',
+ box(100,115,130,65,'同じ処理 f','#e8f1fe')+box(310,115,130,65,'同じ処理 f','#e8f1fe')+box(520,115,130,65,'同じ処理 f','#e8f1fe')+arrow(30,147,90,147)+txt(50,120,'h₀')+arrow(230,147,300,147)+txt(265,120,'h₁')+arrow(440,147,510,147)+txt(475,120,'h₂')+arrow(650,147,730,147)+txt(698,120,'h₃')+arrow(165,242,165,190)+arrow(375,242,375,190)+arrow(585,242,585,190)+txt(165,270,'1日目 x₁')+txt(375,270,'2日目 x₂')+txt(585,270,'3日目 x₃')+arrow(585,105,585,65)+txt(585,42,'翌日の予測へ'),300);
+const attentionDiagram = () => svg('Attentionによる情報の参照','ある時点の表現が、各時点の表現を重み付けして混ぜる概念図。図の重みは説明用で、実データの分析結果ではない。',
+ box(45,190,130,55,'1日目の表現')+box(235,190,130,55,'2日目の表現')+box(425,190,130,55,'3日目の表現')+arrow(110,180,355,90)+arrow(300,180,370,90)+arrow(490,180,390,90)+box(275,30,210,55,'重み付けして混ぜる','#e8f1fe')+txt(180,112,'0.2')+txt(310,145,'0.3')+txt(475,112,'0.5')+txt(650,128,'参照する割合を')+txt(650,155,'入力に応じて変える'),280);
+const splitDiagram = () => svg('時間に沿ったデータ分割','左から過去、未来の順。訓練期間で重みを学習し、その後の検証期間で設定を選び、最後のテスト期間で最終評価する。',
+ box(25,65,350,82,'訓練：重みを学習','#e8f1fe')+box(385,65,180,82,'検証：設定を選ぶ','#eef5ee')+box(575,65,160,82,'テスト：最終評価','#fff5db')+arrow(30,215,725,215)+txt(65,249,'過去')+txt(685,249,'未来'),270);
+const lossDiagram = () => svg('過学習の模式図','横軸は学習の進行、縦軸は損失。訓練損失は下がり続けるが、検証損失は途中から上がる。検証損失が小さい付近を候補としてモデルを選ぶ。',
+ arrow(80,245,710,245)+arrow(80,245,80,25)+txt(60,35,'損失')+txt(650,280,'学習の進行')+
+ `<path d="M100 50C200 130 260 190 360 208S560 230 675 232" fill="none" stroke="#0031d8" stroke-width="4"/><path d="M100 70C205 140 285 188 390 184S555 125 675 65" fill="none" stroke="#9b4f00" stroke-width="4" stroke-dasharray="9 5"/>`+
+ txt(580,213,'訓練損失','fill="#0031d8"')+txt(590,80,'検証損失','fill="#9b4f00"')+line(365,160,365,243,'stroke-dasharray="4 4"')+txt(350,140,'候補となる時点'),300);
+
+const sources = [
+ ['mlp','Dive into Deep Learning — Multilayer Perceptrons','https://d2l.ai/chapter_multilayer-perceptrons/mlp.html','重み・隠れ層・非線形な活性化関数。'],
+ ['optim','PyTorch — Optimizing Model Parameters','https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html','損失関数・バッチ・学習率・パラメータ更新。'],
+ ['grad','PyTorch — Automatic Differentiation','https://docs.pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html','計算グラフと連鎖律による勾配の計算。'],
+ ['sequence','Dive into Deep Learning — Working with Sequences','https://d2l.ai/chapter_recurrent-neural-networks/sequence.html','時系列を使う予測の考え方。'],
+ ['time','TensorFlow — Time series forecasting','https://www.tensorflow.org/tutorials/structured_data/time_series','時系列の窓・入力形状・データ分割・前処理。'],
+ ['rnn','Dive into Deep Learning — Recurrent Neural Networks','https://d2l.ai/chapter_recurrent-neural-networks/rnn.html','隠れ状態と、時点間でのパラメータ共有。'],
+ ['lstm','Dive into Deep Learning — Long Short-Term Memory','https://d2l.ai/chapter_recurrent-modern/lstm.html','内部状態とゲートの役割。'],
+ ['attention','Vaswani et al. — Attention Is All You Need','https://arxiv.org/html/1706.03762v7','Attention・位置情報・Transformerの原論文。'],
+ ['leak','scikit-learn — Common pitfalls and recommended practices','https://scikit-learn.org/stable/common_pitfalls.html','評価に混ざる情報漏洩と、訓練データでの前処理の学習。'],
+ ['design','デジタル庁デザインシステム','https://design.digital.go.jp/dads/','文字・配色・余白・操作・フォーカス表示の設計の参照元。']
+];
+const refs = (...ids) => `<div class="references">この章の参照：${ids.map(id=>{const s=sources.find(x=>x[0]===id);return `<a href="${s[2]}" target="_blank" rel="noopener noreferrer">${s[1]}</a>`;}).join(' ／ ')}</div>`;
+const callout = (title,body) => `<aside class="callout"><strong>${title}</strong><p>${body}</p></aside>`;
+const check = (question,answer) => `<details class="self-check"><summary><span class="small-label">ひとこと確認</span>${question}</summary><p>${answer}</p></details>`;
+const seminar = (sentence,meaning) => `<div class="seminar"><span class="small-label">ゼミでこう聞こえたら</span><blockquote>「${sentence}」</blockquote><p>${meaning}</p></div>`;
+const lessons = [
+ {id:'overview',title:'まず、全体像をつかむ',sub:'入力・予測・学習',time:'約8分',headline:'ニューラルネットの<br>話についていく。',lead:'丸と線の図にも、見慣れないモデル名にも、共通する土台があります。まずは「何を受け取り、何を出し、どう学ぶか」をつかみましょう。',body:`
+ <div class="intro-meta"><span>図解と文章で学ぶ</span><span>全6章・約60〜90分</span><span>研究発表を理解するために</span></div>
+ ${fig('01 / 最初に覚えたい全体像',networkDiagram(),'左から右へ、数値を加工して予測を作ります。丸と線は計算の仕組みを表す模式図です。')}
+ <h2>ニューラルネットは、調整できる計算の仕組み</h2>
+ <p>ニューラルネットワークは、入力された数値に計算を重ねて、出力を作るモデルです。計算の中には<strong>重み</strong>や<strong>バイアス</strong>という調整できる数値があり、データを使ってその値を決めていきます。この調整が「学習」です。</p>
+ <p>脳の神経細胞に由来する名前ですが、ここでは<strong>数値を変換する計算の集まり</strong>として考えれば十分です。図の丸が生物の神経細胞をそのまま再現しているわけではありません。</p>
+ <h2>一つの例を、最後まで追う</h2>
+ <p>この教材では、ある部屋で日ごとに記録した<strong>室温・湿度・消費電力量</strong>を使い、過去7日間から翌日の消費電力量を予測する例を扱います。日付を除く3項目が入力の材料です。数値や結果は、説明のために作った架空のものです。</p>
+ <div class="flow"><div><small>入力 X</small><b>過去7日間の<br>3項目の測定値</b></div><span aria-hidden="true">→</span><div class="blue"><small>モデル f</small><b>重みとバイアスで<br>数値を加工する</b></div><span aria-hidden="true">→</span><div><small>予測 ŷ</small><b>翌日の電力量<br>例：12.4 kWh</b></div></div>
+ <p>入力に使う項目を<strong>特徴量</strong>、予測したい値を<strong>目的変数</strong>や<strong>ターゲット</strong>と呼びます。同じ電力量でも、「過去の電力量」は特徴量、「翌日の電力量」はターゲットになります。</p>
+ <h2>「使うとき」と「学ぶとき」を分ける</h2>
+ <div class="two-col"><article><h3>推論：予測を出す</h3><p>決まった重みを使って、入力から出力を計算します。明日の正解がまだ分からなくても、明日の予測は出せます。</p></article><article><h3>学習：重みを調整する</h3><p>過去の入力と、その後に実際に観測された正解を使い、予測とのずれが小さくなるように重みを調整します。</p></article></div>
+ <p>例えば過去のデータには、1〜7日目の測定値だけでなく、8日目に実際に使った電力量も残っています。この組を訓練に使い、現在の最新7日間から、まだ観測していない翌日を予測します。</p>
+ ${callout('読むときの道しるべ','この教材のゴールは、入力・モデルの構造・学習の目標・評価方法の4点を整理できることです。式の導出やコード実装は扱いません。数式の補足は読み飛ばしても先へ進めます。')}
+ ${seminar('過去7日分を入力し、翌日の値を回帰で予測しました。','回帰は、電力量のような数値を予測する課題です。「異常／正常」のようなカテゴリを予測する課題は分類と呼びます。入力が同じでも、出力と学習の目標は課題によって変わります。')}
+ ${check('予測を出すたびに、重みは必ず更新される？','通常の推論では更新しません。重みを更新する学習と、学習済みの重みで予測する推論を区別しましょう。追加学習など、運用中に更新する設計もあります。')}
+ ${refs('mlp','sequence')}`},
+ {id:'layers',title:'丸と線の中で起きること',sub:'重み・活性化関数・層',time:'約12分',headline:'掛けて、足して、<br>形を変える。',lead:'大きなネットワークも、小さな計算の積み重ねです。まずは丸一つの中身を見てから、層を重ねる意味を考えます。',body:`
+ <h2>1つのニューロンは、何を計算する？</h2>
+ <p>入力のそれぞれに重みを掛けて足し合わせ、バイアスを加えます。その結果を<strong>活性化関数</strong>に通して、次の計算へ渡します。ここでは説明を簡単にするため、入力を2つに絞ります。</p>
+ ${fig('02 / 丸一つの中身',neuronDiagram(),'重みは各入力に掛ける係数、バイアスは加算する定数です。どちらも学習で調整できます。')}
+ <div class="table-wrap"><table><thead><tr><th>部品</th><th>役割</th><th>見方</th></tr></thead><tbody><tr><th>入力 x</th><td>処理の出発点になる数値</td><td>測定値や、前の層の出力</td></tr><tr><th>重み w</th><td>各入力に掛ける係数</td><td>正・負・大きさによって計算への影響が変わる</td></tr><tr><th>バイアス b</th><td>重み付きの和に足す値</td><td>出力の基準をずらす</td></tr><tr><th>活性化関数 φ</th><td>計算結果を変換する関数</td><td>ReLUなど。非線形性を加える</td></tr></tbody></table></div>
+ <details><summary>短い式と数値で確認する</summary><div class="detail-body"><div class="formula">z = w₁x₁ + w₂x₂ + b<br>h = φ(z)</div><p>xは入力、wは重み、bはバイアス、zは変換前、hは変換後の出力です。φ（ファイ）が活性化関数を表します。</p><p>大きさをそろえる前処理をした入力を x₁ = 0.6、x₂ = 0.4 とし、説明用に w₁ = 0.5、w₂ = 1、b = 0.1 と置くと、z = 0.5 × 0.6 + 1 × 0.4 + 0.1 = <strong>0.8</strong> です。ReLUなら h も0.8になります。これは内部の計算例で、電力量の単位を持つ最終予測ではありません。</p></div></details>
+ <h2>活性化関数は、なぜ必要？</h2>
+ <p>重みを掛けて足す処理だけなら、何層重ねても、全体を一つの「重みを掛けて足す処理」にまとめられます。途中に<strong>非線形な変換</strong>を入れることで、入力によって応答が変わる、より複雑な関係を表せるようになります。</p>
+ <p>代表例の<strong>ReLU（レルー）</strong>は、負の値を0にし、正の値はそのまま返します。単純ですが、0を境に折れ曲がるため非線形です。</p>
+ ${fig('03 / 活性化関数 ReLU',reluDiagram(),'ReLU(z) = max(0, z)。小さな折れ曲がりを組み合わせて、複雑な関数を作れます。')}
+ <h2>層は、複数のニューロンをまとめたもの</h2>
+ <p>同じ入力に対して、重みの違うニューロンを複数並べると、複数の出力ができます。それを次の層の入力に使います。入力と最終出力の間にある層を<strong>隠れ層</strong>、その数値を<strong>隠れ表現</strong>と呼びます。</p>
+ <p>こうした層を重ねた基本的なモデルが<strong>MLP（多層パーセプトロン）</strong>です。全結合層では、前の層のすべての入力から、それぞれのニューロンへ接続があります。研究で聞く「Dense」「Linear」は、この種の変換を指すことがあります。活性化関数を別に付ける実装もあります。</p>
+ ${callout('隠れ層の意味は、最初から決めていない','内部の数値に「温度の影響」「曜日の効果」といった名前が自動で付くわけではありません。予測に使える表現を学びますが、人がそのまま解釈できるとは限りません。重みの大きさだけで因果関係や特徴量の重要性も判断できません。')}
+ <h2>出力の作り方は、課題に合わせる</h2>
+ <p>翌日の電力量を一つ予測するなら、最後は数値一つを出します。回帰では最後を線形出力にする構成がよく使われます。二値分類ならsigmoidで0〜1の値に変換するなど、出力層の設計が変わります。0〜1の出力でも、確率としての信頼性は別に評価が必要です。</p>
+ <p>層やニューロンを増やすと、表せる関数の選択肢は広がり得ます。一方で、計算量や過学習の問題もあるため、「深いほど必ず性能がよい」とは言えません。</p>
+ ${seminar('隠れ層を2層、各層64ユニット、活性化関数をReLUとしました。','64個の計算単位を持つ隠れ層を2つ通す構成です。「64」は通常、入力項目数や日数とは別の、設計時に決める内部表現の幅を指します。')}
+ ${check('活性化関数を外して、線形・アフィン変換だけを重ねると？','全体を一つのアフィン変換にまとめられます。層を重ねるだけでは、非線形な関係を表す力は増えません。バイアスを含む変換は、厳密にはアフィン変換です。')}
+ ${refs('mlp')}`},
+ {id:'learning',title:'「学習する」の中身',sub:'損失・勾配・重みの更新',time:'約12分',headline:'予測のずれを使って、<br>重みを調整する。',lead:'学習は、正解を丸ごと書き込む操作ではありません。予測のずれを数値にし、どの方向に重みを動かすかを計算します。',body:`
+ ${fig('04 / 学習の1ステップ',trainDiagram(),'逆伝播は勾配を計算する段階です。その勾配を使い、重みを実際に変えるのは最適化手法です。')}
+ <h2>① いまの重みで、予測する</h2><p>まず、入力をモデルに通します。入力側から出力側へ計算するので<strong>順伝播</strong>と呼びます。まだ学習していない重みでは、予測が正解から大きくずれることがあります。</p>
+ <h2>② ずれを「損失」にする</h2><p>予測を12.4 kWh、正解を14.0 kWhとすると、差は−1.6 kWhです。差を2乗するなら2.56になります。このように、予測のよくなさを数値にする規則が<strong>損失関数</strong>です。複数のサンプルについて2乗した差を平均するものが、平均二乗誤差（MSE）です。</p>
+ <p>損失は学習で小さくしたい値です。回帰と分類では、目的に合う損失関数も変わります。損失と、発表の結果表に載る評価指標は、同じことも違うこともあります。</p>
+ <h2>③ 各重みについて、勾配を求める</h2><p><strong>勾配</strong>は、各重みを少し変えたとき、損失がどちら向きに、どの程度変わるかを示す量です。微分の「傾き」を、多数の重みについてまとめたもの、と考えてください。</p>
+ <p><strong>誤差逆伝播（バックプロパゲーション）</strong>は、出力側から計算をたどり、連鎖律を使って、各重みに対する勾配を効率よく求める方法です。正解の値を入力側に流し込んだり、誤差を各層に均等に割り振ったりする処理ではありません。</p>
+ <h2>④ 勾配を使って、重みを更新する</h2><p>基本的な<strong>勾配降下法</strong>では、勾配と反対向きへ少し動きます。その一歩の大きさに関わる設定が<strong>学習率</strong>です。大きすぎると不安定になり、小さすぎると学習が遅くなることがあります。</p>
+ <details><summary>重み一つの更新を、短い式で見る</summary><div class="detail-body"><div class="formula">新しい w = 今の w − 学習率 × ∂L/∂w</div><p>Lは損失、∂L/∂wは「重みwに対する損失の微分」です。w = 0.5、学習率 = 0.1、勾配 = −0.3なら、新しいwは 0.5 − 0.1 × (−0.3) = <strong>0.53</strong> です。この例は勾配降下法一回の説明用です。</p><p>十分小さな更新なら損失を下げる方向が期待できますが、有限の一歩で必ず下がる保証ではありません。深いネットワークでは、学習が常に大域的な最小値に達するとも限りません。</p></div></details>
+ <p>SGDや<strong>Adam</strong>は、更新のルールを定めた最適化手法です。Adamは過去の勾配の情報も使って更新量を調整します。モデルの構造とは別に選ぶもので、LSTMにもMLPにも組み合わせられます。</p>
+ <h2>学習の会話で、混ざりやすい言葉</h2>
+ <div class="table-wrap"><table><thead><tr><th>言葉</th><th>何を表す？</th><th>例</th></tr></thead><tbody><tr><th>パラメータ</th><td>学習で調整するモデル内の数値</td><td>重み・バイアス</td></tr><tr><th>ハイパーパラメータ</th><td>学習方法や構造を決める設定</td><td>学習率・層数・隠れ次元</td></tr><tr><th>バッチ</th><td>まとめて処理するサンプルの集まり</td><td>32個の「7日間の窓」を一組にする</td></tr><tr><th>エポック</th><td>訓練データ全体を一巡する単位</td><td>同じ訓練データを20周すれば20エポック</td></tr></tbody></table></div>
+ ${callout('時系列の「状態」と、学習する「重み」は別','後で出てくるRNNの隠れ状態は、入力を読むことで変わる内部の数値です。推論中に隠れ状態が変わっても、重みを追加学習しているとは限りません。')}
+ ${seminar('MSEを損失として、Adamで学習しました。','何を小さくするかがMSE、どう重みを更新するかがAdamです。「何のモデルか」「何を目標にするか」「どう更新するか」を別々に整理しましょう。')}
+ ${check('誤差逆伝播と勾配降下法は、同じ処理？','役割が違います。誤差逆伝播は勾配を求め、勾配降下法などの最適化手法は、その情報を使ってパラメータを更新します。')}
+ ${refs('optim','grad')}`},
+ {id:'timeseries',title:'時系列の表を、入力に変える',sub:'窓・特徴量・データの形',time:'約10分',headline:'「何行あるか」から、<br>「どの期間を見るか」へ。',lead:'時系列の研究では、モデル名より先に、入力と予測対象の作り方を確認すると理解しやすくなります。',body:`
+ <h2>1行が1日でも、1サンプルが1日とは限らない</h2>
+ <div class="table-wrap"><table><caption>共通例のデータの一部（架空の測定値）</caption><thead><tr><th>日付</th><th>室温 ℃</th><th>湿度 %</th><th>電力量 kWh</th></tr></thead><tbody><tr><th>1日目</th><td>22</td><td>50</td><td>10.0</td></tr><tr><th>2日目</th><td>23</td><td>52</td><td>11.0</td></tr><tr><th>3日目</th><td>21</td><td>48</td><td>9.5</td></tr><tr><th>…</th><td>…</td><td>…</td><td>…</td></tr><tr><th>7日目</th><td>25</td><td>57</td><td>12.0</td></tr><tr><th>8日目</th><td>26</td><td>58</td><td>14.0</td></tr></tbody></table></div>
+ <p>1〜7日目をひとまとまりの入力にして、8日目の電力量を正解にします。この<strong>連続した一定期間の入力</strong>を、窓やウィンドウと呼びます。窓を1日ずらすと、次は2〜8日目から9日目を予測する組になります。</p>
+ ${fig('05 / 入力の窓と、予測する時点',windowDiagram(),'予測時点より後の観測値は入力に入れません。8日目の値が、後日の別の予測の入力になること自体は自然です。')}
+ <h2>よく見る形：「バッチ × 時点 × 特徴量」</h2>
+ <div class="shape"><div><b>32</b><span>サンプル</span><small>一度に扱う窓の数</small></div><i>×</i><div><b>7</b><span>時点</span><small>一つの窓に含む日数</small></div><i>×</i><div><b>3</b><span>特徴量</span><small>各日の測定項目数</small></div></div>
+ <p>この例なら、入力の形は <strong>(32, 7, 3)</strong> と書けます。3次元の数値の配列、つまり<strong>テンソル</strong>です。32日分という意味ではなく、7日分の窓が32個あります。ライブラリや設定によって軸の順序は変わるので、図やコードの定義を確認します。</p>
+ <p>1日ずつ窓をずらし、欠測のない連続100日から「過去7日→翌日」を作るなら、分割前の候補は93組です。重なった窓は互いに無関係なサンプルではないことにも注意が必要です。</p>
+ <h2>同じ窓でも、モデルへの渡し方が違う</h2>
+ <div class="two-col"><article><h3>MLPに渡す例</h3><p>7日 × 3項目を、順序を固定して21個の数値に並べます。これを<strong>平坦化（flatten）</strong>と呼びます。何番目が何日前の値かが固定されていれば、過去の情報を使えます。</p></article><article><h3>時系列用のモデルに渡す例</h3><p>7時点それぞれに3項目がある形を保ち、時間方向の処理を行います。RNNや、時系列向けに構成したTransformerなどが候補です。</p></article></div>
+ <h2>大きさをそろえるのは、なぜ？</h2><p>温度・湿度・電力量では、単位も数値の幅も違います。学習を進めやすくするため、各特徴量の平均や標準偏差を使って尺度をそろえる<strong>標準化</strong>などを行います。前処理に使う平均や標準偏差は、訓練データだけから決めます。</p>
+ <p>前処理は課題に応じて選びます。日付の扱い、欠測値の補完、不規則な観測間隔などは、モデルの前に確認したい点です。この共通例は、欠測のない等間隔の日次データを仮定しています。</p>
+ ${callout('未来の何を知っている設定か','翌日の実測室温は、今日の時点では使えません。一方、カレンダー上の曜日や、その時点で利用できる天気予報を入力する設計はあり得ます。「未来の日付だから不可」ではなく、「予測するときに入手できるか」を確認します。')}
+ ${seminar('入力長を7、予測ホライズンを1、特徴量数を3にしました。','過去7時点を見て、1時点先を予測する設定です。ホライズンは予測の先の長さ。時点の間隔が日・時間・分のどれかも確認しましょう。')}
+ ${check('(32, 7, 3) の「7」を増やすと、特徴量も増える？','この軸の定義では、増えるのは一つの窓に含む時点数です。各時点の特徴量数は3のままです。MLP用に平坦化すれば、入力する数値の総数は増えます。')}
+ ${refs('time','sequence','leak')}`},
+ {id:'models',title:'モデル名の違いをつかむ',sub:'MLP・RNN・LSTM・Attention',time:'約15分',headline:'過去の情報を、<br>どう受け渡すか。',lead:'モデル名は、情報の加工の仕方の違いを表します。細部を暗記する前に、各モデルが何を工夫しているかを見ていきます。',body:`
+ <h2>MLP：窓をまとめて受け取る</h2><p>先ほどの全結合層を重ねたモデルです。例えば21個に並べた入力を、一度に受け取って予測します。時間方向の繰り返し処理はありませんが、入力の位置が固定されていれば、何日前の値かに応じた重みを学べます。</p>
+ <h2>RNN：途中の状態を、次の時点へ渡す</h2><p><strong>RNN（再帰型ニューラルネットワーク）</strong>は、前の時点までの<strong>隠れ状態</strong>と、いまの入力を使って、新しい隠れ状態を作ります。同じ計算ルールと重みを、各時点で繰り返し使います。</p>
+ ${fig('06 / RNNを時間に沿って広げる',rnnDiagram(),'3時点に短縮した模式図。横に並ぶ処理は別々の重みではなく、時点間で同じ重みを共有します。')}
+ <p>隠れ状態は、それまでの入力に応じて変わる数値ベクトルです。「過去を要約するメモ」にたとえられますが、過去の全数値をそのまま保存するわけではありません。単純なRNNでは、長い時間を隔てた関係を学ぶのが難しい場合があります。</p>
+ <details><summary>隠れ状態の式を、言葉と対応させる</summary><div class="detail-body"><div class="formula">hₜ = φ(Wₓxₜ + Wₕhₜ₋₁ + b)</div><p>xₜは時点tの入力、hₜ₋₁は前の状態、hₜは新しい状態です。WₓとWₕは重みの行列で、時点が変わっても同じものを使います。新しい入力と前の状態を混ぜて変換する、という形を読めれば十分です。</p></div></details>
+ <h2>LSTM：残す情報と、書き換える情報を調整する</h2><p><strong>LSTM</strong>はRNNの一種です。隠れ状態に加えて情報を運ぶ<strong>セル状態</strong>を持ち、情報を残す割合・追加する割合・出力へ使う割合を<strong>ゲート</strong>で調整します。ゲートも入力に応じて計算され、その計算に使う重みを学習します。</p>
+ <div class="gate-flow"><div><small>前のセル状態</small><b>これまでの情報</b></div><span>→</span><div class="gate"><small>忘却ゲート</small><b>どれだけ残す？</b></div><span>＋</span><div class="gate"><small>入力ゲート</small><b>何を追加する？</b></div><span>→</span><div><small>新しいセル状態</small><b>次へ運ぶ情報</b></div></div>
+ <p class="caption">セル状態の更新に注目した概念図です。実際には候補となる新情報を計算し、出力ゲートなども使って隠れ状態を作ります。</p>
+ <p>LSTMは長い関係を学びやすくする工夫ですが、すべての過去を保持できる保証ではありません。隠れ状態の幅を64にしても、64日間を記憶するという意味にはなりません。</p>
+ <h2>Attention：入力に応じて、参照する割合を変える</h2><p><strong>Attention</strong>は、複数の表現に重みを付けて混ぜる仕組みです。Self-attentionでは、同じ系列内の表現どうしを参照します。どの表現をどれくらい使うかを、入力に応じて計算します。</p>
+ ${fig('07 / Attentionの見方',attentionDiagram(),'0.2・0.3・0.5は、合計1になる説明用の参照割合です。入力によって変わる重みで、モデルの固定パラメータとは区別します。')}
+ <p><strong>Transformer</strong>は、Attentionに加え、全結合の変換・残差接続・正規化などを組み合わせた構造です。複数の参照の仕方を並行して計算する<strong>Multi-head attention</strong>も使われます。ここでは「情報を複数の観点で混ぜる」と押さえましょう。</p>
+ <p>Self-attentionだけでは系列の順序を十分に区別できないため、位置や時刻の情報を与える工夫が必要です。また、予測時点より先の情報を見せないよう、入力の範囲や<strong>マスク</strong>を設計します。過去の入力窓の中で相互に参照することは、未来の正解を見ることとは異なります。</p>
+ ${callout('Attentionの図は、そのまま因果の説明にはならない','参照割合が大きい時点を見つけても、それだけで「この日の値が予測を引き起こした」「最も重要な原因だ」とは結論できません。内部計算の可視化と、予測の根拠や因果関係の検証は区別します。')}
+ <h2>名前を聞いたら、この違いを思い出す</h2><div class="table-wrap"><table><thead><tr><th>モデル・仕組み</th><th>情報の扱い方</th><th>発表で確認すること</th></tr></thead><tbody><tr><th>MLP</th><td>入力をまとめて層に通す</td><td>どの期間を、どの順で並べたか</td></tr><tr><th>RNN</th><td>隠れ状態を時間方向へ渡す</td><td>どの時点の状態から出力を作るか</td></tr><tr><th>LSTM</th><td>ゲートで状態の残し方を調整</td><td>入力長と隠れ次元、層数</td></tr><tr><th>Transformer</th><td>Attentionなどで表現を変換</td><td>時点・特徴量のどちらを参照単位にするか、位置情報と入力範囲</td></tr></tbody></table></div>
+ <p>時系列研究には、局所的な時間パターンを扱う1次元CNNやTCNなども登場します。この教材では詳しく扱いませんが、「時間方向に小さなフィルタを動かす構造」として入口を押さえれば十分です。モデル間の優劣は、データ・課題・比較条件によって変わります。</p>
+ ${seminar('LSTMの最終隠れ状態を全結合層へ渡し、翌日を予測しました。','各日の入力をLSTMで処理し、最後の状態を予測用の数値へ変換する構成です。LSTMと全結合層を一つのモデルとしてつなぎ、通常は一緒に学習します。')}
+ ${check('RNNを時間方向に7個描いた図は、重みの違うモデル7個？','通常は、同じ処理を7時点分に展開した図です。各時点で隠れ状態は変わりますが、重みは共有します。')}
+ ${refs('rnn','lstm','attention','time')}`},
+ {id:'seminar',title:'実験結果と発表を読み解く',sub:'汎化・評価・研究の見取り図',time:'約12分',headline:'何を学び、<br>何で確かめたのか。',lead:'訓練でよく当たることと、まだ見ていないデータで役立つことは別です。最後に、実験の見方と発表を聞く順番を整理します。',body:`
+ <h2>訓練・検証・テストは、役割が違う</h2>
+ ${fig('08 / 未来を予測する課題の分割例',splitDiagram(),'これは将来予測を評価する場合の基本形です。実際の分割は、予測時点・更新の頻度・対象となる人や装置などに合わせて決めます。')}
+ <p><strong>訓練データ</strong>は重みを学習するために使います。<strong>検証データ</strong>は層数・学習率・学習を止める時点などを選ぶために使います。<strong>テストデータ</strong>は、それらを決めた後の最終評価に使います。テスト結果を見て何度も設定を選ぶと、独立した最終評価としての意味が弱まります。</p>
+ <p>未来を予測するなら、過去で学び、その後の期間で確かめる分割が出発点です。窓を作ってから無作為に分けると、近い時期や重なる窓が双方に入り、想定する将来予測を十分に評価できない場合があります。</p>
+ <p>複数の人や装置に対して使う研究では、「同じ装置の未来」か「新しい装置」かによっても分け方が変わります。また境界付近の入力窓に過去の訓練期間が含まれること自体は、予測時点で利用できる情報なら、直ちに漏洩ではありません。ターゲットの期間や情報の利用可能性を確認します。</p>
+ <h2>過学習：訓練に合わせすぎる</h2>
+ <p>訓練損失が小さくなっても、未知のデータでよく当たるとは限りません。訓練データに特有の細部やノイズへ合わせすぎる状態を<strong>過学習</strong>、新しいデータにも通用する性質を<strong>汎化</strong>と呼びます。</p>
+ ${fig('09 / 学習曲線の読み方',lossDiagram(),'実測結果ではない模式図です。検証損失の悪化は過学習の手がかりですが、データの分布の違いなども確認します。')}
+ <p>対策には、モデルを小さくする、重みを大きくしすぎない<strong>正則化</strong>、訓練時に一部の内部出力をランダムに落とす<strong>Dropout</strong>、検証性能を見て止める<strong>Early stopping</strong>などがあります。どれも、採用すれば必ず改善するというものではありません。</p>
+ <h2>結果表は、指標と比較相手を確認する</h2>
+ <div class="table-wrap"><table><caption>架空のテスト結果。同じ期間・同じ単位で比較した例</caption><thead><tr><th>手法</th><th>MAE ↓</th><th>RMSE ↓</th></tr></thead><tbody><tr><th>前日と同じ値を予測</th><td>1.80 kWh</td><td>2.40 kWh</td></tr><tr><th>MLP</th><td>1.50 kWh</td><td>2.10 kWh</td></tr><tr><th>LSTM</th><td>1.40 kWh</td><td>2.00 kWh</td></tr></tbody></table></div>
+ <p><strong>MAE</strong>は誤差の絶対値の平均、<strong>RMSE</strong>は誤差の2乗の平均の平方根です。どちらも小さいほどよく、ここではkWhで読めます。RMSEは大きな誤差の影響を受けやすい指標です。標準化した尺度のままか、元の単位に戻した評価かも確認しましょう。</p>
+ <p>この例から言えるのは、指定したテスト期間でLSTMの誤差が小さかったことです。実用上意味のある差か、別の期間や初期値でも続くか、計算時間に見合うかは別に確認します。前日と同じ値などの単純な方法を<strong>ベースライン</strong>にすると、複雑なモデルを使う効果が見えます。</p>
+ <details><summary>MSE・MAE・RMSEの式を見返す</summary><div class="detail-body"><div class="formula">MSE = 誤差² の平均<br>MAE = |誤差| の平均<br>RMSE = √MSE</div><p>誤差は「予測 − 正解」です。MAEとRMSEは目標と同じ単位、MSEはその2乗の単位です。同じ課題でも学習にMSE、評価にMAEとRMSEを使うことがあります。</p></div></details>
+ <h2>発表は、5つの問いで聞いてみる</h2>
+ <ol class="reading-list"><li><b>何を予測する？</b><p>対象とするデータ、予測する値、何時点先か。</p></li><li><b>何を入力する？</b><p>特徴量、窓の長さ、予測時点で使える情報か。</p></li><li><b>どう処理する？</b><p>モデルの構造と、どこから最終出力を作るか。</p></li><li><b>どう学習する？</b><p>損失関数、最適化手法、設定の選び方。</p></li><li><b>どう確かめる？</b><p>データの分割、評価指標、比較相手、結果のばらつき。</p></li></ol>
+ <h2>架空の発表を、分解してみる</h2><blockquote class="abstract">過去7日間の室温・湿度・電力量を入力し、LSTMと全結合層で翌日の電力量を予測した。損失はMSE、最適化はAdamを用いた。時系列順に訓練・検証・テストを分け、検証損失によるEarly stoppingを適用した。テスト期間のMAEを、MLPと前日値による予測と比較した。</blockquote>
+ <div class="table-wrap"><table><tbody><tr><th>入力 → 出力</th><td>7日 × 3項目 → 翌日の電力量一つ</td></tr><tr><th>処理</th><td>LSTMで時間方向の情報を加工し、全結合層で予測へ変換</td></tr><tr><th>学習</th><td>MSEを小さくするよう、Adamで重みを更新</td></tr><tr><th>選択と評価</th><td>検証で学習終了の時点を選び、テストでMAEを比較</td></tr></tbody></table></div>
+ ${callout('分からなくなったら、ここを質問する','「入力の1サンプルは何日分ですか？」「最終的な出力はどこから作りますか？」「検証用とテスト用の期間は分けていますか？」。分からない用語を全部覚えるより、研究の流れのどこが不明かを確かめてみましょう。')}
+ ${check('テストの誤差を見ながら、最もよい層数を選んでもよい？','そのテストデータを設定選びに使うことになります。検証データで設定を選び、独立して残したテストデータで最終評価する役割分担を確認しましょう。')}
+ ${refs('time','leak','optim')}`}
+];
+// [用語, 英語・別名, 説明, 復習先の章ID]
+const glossary = [
+ ['特徴量','feature','入力に使う項目。過去の電力量も、未来を予測するための特徴量になれる。','overview'],
+ ['ターゲット','target・目的変数・ラベル','予測したい値やカテゴリ。共通例では翌日の電力量。','overview'],
+ ['回帰','regression','数値を予測する課題。分類はカテゴリを予測する課題。','overview'],
+ ['推論','inference','決まった重みを使い、入力から出力を計算すること。','overview'],
+ ['重み・バイアス','weight・bias・parameter','入力に掛ける係数と、加える定数。どちらも学習で調整する。','layers'],
+ ['活性化関数','activation function','層の計算結果を変換する関数。隠れ層では非線形な関数が使われる。','layers'],
+ ['ReLU','レルー','負の値は0、正の値はそのまま返す活性化関数。','layers'],
+ ['隠れ層・隠れ表現','hidden layer・representation','入力と最終出力の間の層と、その内部で計算した数値表現。','layers'],
+ ['全結合層','Dense・Linear・fully connected','前の層の各入力に重みを掛けて混ぜ、バイアスを加える層。活性化関数が別の場合もある。','layers'],
+ ['MLP','多層パーセプトロン','全結合層と非線形な活性化関数を組み合わせる基本的なモデル。','layers'],
+ ['損失関数','loss function','予測のよくなさを数値にする規則。学習ではこの値を小さくしたい。','learning'],
+ ['順伝播','forward propagation','入力から出力に向けて計算を進めること。','learning'],
+ ['勾配','gradient','各パラメータを少し動かしたときの、損失の変化を表す微分の集まり。','learning'],
+ ['誤差逆伝播','backpropagation・バックプロパゲーション','連鎖律を使って各パラメータへの勾配を効率よく計算する方法。','learning'],
+ ['最適化手法','optimizer・SGD・Adam','勾配などを使ってパラメータを更新するルール。モデルの構造とは別に選ぶ。','learning'],
+ ['学習率','learning rate','重みの更新量に関わる設定。大きすぎると不安定、小さすぎると遅くなることがある。','learning'],
+ ['ハイパーパラメータ','hyperparameter','層数・学習率など、モデルの構造や学習方法の設定。','learning'],
+ ['バッチサイズ','batch size','まとめて処理するサンプルの数。時系列の窓の長さとは違う。','learning'],
+ ['エポック','epoch','訓練データ全体を一巡する単位。','learning'],
+ ['入力長・窓','lookback・window length','一つの入力に含める過去の時点数。','timeseries'],
+ ['予測ホライズン','forecast horizon','何時点先までを予測するか。単位時間も確認する。','timeseries'],
+ ['テンソル','tensor・shape','ここでは多次元の数値配列。その各軸の大きさをshapeと呼ぶ。','timeseries'],
+ ['平坦化','flatten','複数の軸の値を、順序を決めて一列に並べる操作。','timeseries'],
+ ['標準化','standardization・normalization','平均と標準偏差を使って尺度をそろえる前処理。normalizationはより広い意味でも使われる。','timeseries'],
+ ['RNN','Recurrent Neural Network','前の隠れ状態と現在の入力から新しい状態を作り、時点間で同じ重みを使うモデル。','models'],
+ ['隠れ状態','hidden state・hidden dimension','入力に応じて変わる内部の数値ベクトル。hidden dimensionはその幅で、記憶する日数ではない。','models'],
+ ['LSTM','Long Short-Term Memory・ゲート','セル状態とゲートを使って、情報の保持や更新を調整するRNNの一種。','models'],
+ ['Attention','注意機構・Self-attention','複数の表現を、入力に応じた割合で混ぜる仕組み。Self-attentionは同じ系列内を参照する。','models'],
+ ['Transformer','Multi-head attention','Attention・全結合の変換・残差接続などを組み合わせる構造。時系列では参照する単位も確認する。','models'],
+ ['位置情報・マスク','positional encoding・mask','系列の位置を知らせる情報と、参照できる範囲を制御する仕組み。','models'],
+ ['過学習・汎化','overfitting・generalization','訓練に合わせすぎることと、未知のデータにも通用する性質。','seminar'],
+ ['訓練・検証・テスト','train・validation・test','重みの学習、設定の選択、最終評価という役割で分けるデータ。','seminar'],
+ ['データ漏洩','data leakage・リーク','予測時点や独立した評価で使えない情報が、モデル作りに混ざること。','seminar'],
+ ['正則化・Dropout','regularization・ドロップアウト','過学習を抑えるための工夫。Dropoutは訓練時に一部の内部出力をランダムに落とす。','seminar'],
+ ['Early stopping','早期終了','検証性能を基に、学習を止める時点や採用する重みを選ぶ方法。','seminar'],
+ ['MSE・MAE・RMSE','平均二乗誤差・平均絶対誤差・二乗平均平方根誤差','予測誤差をまとめる指標。MSEは誤差の2乗の平均、MAEは絶対値の平均、RMSEはMSEの平方根。','seminar'],
+ ['ベースライン・アブレーション','baseline・ablation study','比較の基準となる手法と、一部の構成要素を外して効果を調べる実験。','seminar']
+];
+
+'use strict';
+(() => {
+ const key='neural-network-basics.progress.v1';
+ const pages=[...lessons,{id:'glossary',title:'用語集',sub:'分からない言葉を検索'},{id:'sources',title:'出典と、この教材について',sub:'学習範囲・参考資料'}];
+ const ids=pages.map(p=>p.id);
+ let state={version:1,chapter:'overview',completed:[]};
+ let saveMessage='このブラウザに自動保存します。';
+ let stored=false;
+ try{
+  const raw=localStorage.getItem(key);
+  if(raw){const v=JSON.parse(raw);if(v&&v.version===1){state.chapter=ids.includes(v.chapter)?v.chapter:'overview';state.completed=Array.isArray(v.completed)?[...new Set(v.completed.filter(id=>lessons.some(l=>l.id===id)))]:[];stored=true;}}
+ }catch{saveMessage='保存データを読めませんでした。現在の学習は利用できます。';}
+ const root=document.querySelector('#lesson-root');
+ root.innerHTML=lessons.map((l,i)=>`<section class="lesson" id="page-${l.id}" hidden aria-labelledby="heading-${l.id}"><div class="chapter-meta"><span>CHAPTER ${String(i+1).padStart(2,'0')} / 06</span><span class="time">${l.time}</span></div><h1 id="heading-${l.id}">${l.headline}</h1><p class="lead">${l.lead}</p>${l.body}<div class="chapter-end"><div class="end-top">${i?`<a class="prev-link" href="#${lessons[i-1].id}">← 前の章</a>`:''}<button class="complete-button" data-complete="${l.id}" aria-pressed="false">この章を読了にする</button><a class="primary" href="#${i<5?lessons[i+1].id:'glossary'}">${i<5?'次の章へ':'用語集へ'} <span aria-hidden="true">→</span></a></div><p class="completion-note">読了は自分用の記録です。いつでも取り消せます。</p></div></section>`).join('')+
+ `<section class="lesson" id="page-glossary" hidden aria-labelledby="heading-glossary"><div class="chapter-meta">REFERENCE / 01</div><h1 id="heading-glossary">発表の途中で、<br>言葉を見返す。</h1><p class="lead">日本語・英語・略語で検索できます。詳しく読み直したいときは、各用語の「本文で復習する」から戻りましょう。</p><label class="search-label" for="glossary-search">用語を検索</label><input class="search-input" id="glossary-search" type="search" placeholder="例：LSTM、勾配、バッチ" autocomplete="off"><p class="search-count" id="search-count" role="status"></p><div id="glossary-items">${glossary.map(([name,alias,desc,chapter])=>`<article class="glossary-item"><h2>${name}</h2><p class="alias">${alias}</p><p>${desc}</p><a href="#${chapter}">本文で復習する →</a></article>`).join('')}</div><p id="search-empty" hidden>該当する用語がありません。短い言葉や、別の表記で検索してください。</p></section>`+
+ `<section class="lesson" id="page-sources" hidden aria-labelledby="heading-sources"><div class="chapter-meta">REFERENCE / 02</div><h1 id="heading-sources">出典と、<br>この教材について。</h1><p class="lead">研究ゼミでモデルと実験の流れを理解するための、最初の一冊として作成しました。</p><h2>前提と範囲</h2><p>線形代数・微分・確率統計は履修済みでも、記憶が曖昧な読者を想定しています。図解と文章で読み進め、数式は折りたたみの補足で確認できます。証明・実装・各モデルの詳細な導出は範囲に含めていません。</p><p>読み時間は目安です。全6章の後に用語集を置き、ゼミの前後に必要な部分へ戻れる構成にしました。</p><h2>例と図について</h2><p>共通例の室温・湿度・電力量、計算中の値、結果表、学習曲線、Attentionの割合は、すべて教材独自の架空例です。実データや実験結果ではありません。図は考え方を伝えるための模式図で、モデルの全演算を再現したものではありません。</p><h2>参考資料</h2><p>以下の教科書・公式チュートリアル・原論文を参照し、日本語で独自に構成・説明しました。リンク先はオンライン資料です。確認日：2026年11月5日。</p><ol class="source-list">${sources.map(s=>`<li><a href="${s[2]}" target="_blank" rel="noopener noreferrer">${s[1]}</a><p>${s[3]}</p><p class="print-source-url">${s[2]}</p></li>`).join('')}</ol><h2>デザインと保存</h2><p>デジタル庁デザインシステムの考え方を参照した、教材用の独自HTML/CSSです。公式コンポーネントのそのままの組み込みや、完全準拠の認証を表すものではありません。</p><p>最後に開いた章と読了した章を、利用できる場合はこのブラウザのlocalStorageに保存します。保存できなくても教材を読むことはできます。外部への送信・ログイン・端末間同期はありません。</p><p>ファイルを直接開く場合の保存はブラウザに依存します。同じファイルの場所・同じブラウザで利用してください。プライベートブラウズ、ブラウザのデータ削除、ファイルの移動で記録を失う場合があります。本文と図には外部フォントやライブラリへの依存がなく、オフラインで利用できます。</p></section>`;
+ const nav=document.querySelector('#chapter-nav');
+ nav.innerHTML=pages.map((l,i)=>`${i===6?'<div class="nav-divider" aria-hidden="true"></div>':''}<a href="#${l.id}" data-page="${l.id}"><span class="nav-number">${i<6?String(i+1).padStart(2,'0'):'＋'}</span><span><span class="nav-title">${l.title}</span><small>${l.sub}</small></span><span class="nav-check" aria-label="読了"></span></a>`).join('');
+ function save(){try{localStorage.setItem(key,JSON.stringify(state));saveMessage='最後の章と読了記録を保存しました。';}catch{saveMessage='保存できません。この画面では学習できます。';}document.querySelector('#save-status').textContent=saveMessage;}
+ function refreshProgress(){
+  document.querySelector('#progress').value=state.completed.length;
+  document.querySelector('#progress-text').textContent=`${state.completed.length} / 6`;
+  document.querySelectorAll('[data-complete]').forEach(b=>{const done=state.completed.includes(b.dataset.complete);b.setAttribute('aria-pressed',String(done));b.textContent=done?'読了済み ✓（取り消す）':'この章を読了にする';});
+  nav.querySelectorAll('a').forEach(a=>{const mark=a.querySelector('.nav-check');const done=state.completed.includes(a.dataset.page);mark.textContent=done?'✓':'';mark.hidden=!done;});
+ }
+ function show(id,focus=false){
+  if(!ids.includes(id))id='overview';
+  state.chapter=id;
+  document.querySelectorAll('section.lesson').forEach(s=>s.hidden=s.id!==`page-${id}`);
+  nav.querySelectorAll('a').forEach(a=>{if(a.dataset.page===id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+  const page=pages.find(p=>p.id===id);document.title=`${page.title} — ニューラルネットの基礎`;
+  save();refreshProgress();
+  if(focus){document.querySelector('#main').focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});}
+ }
+ root.addEventListener('click',e=>{const button=e.target.closest('[data-complete]');if(!button)return;const id=button.dataset.complete;state.completed=state.completed.includes(id)?state.completed.filter(x=>x!==id):[...state.completed,id];save();refreshProgress();});
+ window.addEventListener('hashchange',()=>{if(location.hash==='#main')return;show(location.hash.slice(1),true);});
+ const search=document.querySelector('#glossary-search');
+ const norm=s=>s.normalize('NFKC').toLocaleLowerCase('ja');
+ function filter(){const q=norm(search.value.trim());let count=0;root.querySelectorAll('.glossary-item').forEach((article,i)=>{const match=norm(glossary[i].slice(0,3).join(' ')).includes(q);article.hidden=!match;if(match)count++;});document.querySelector('#search-count').textContent=`${count} / ${glossary.length}語を表示`;document.querySelector('#search-empty').hidden=count!==0;}
+ search.addEventListener('input',filter);filter();
+ // 印刷時は、閉じた補足と検索で隠れた用語もすべて含める。
+ let closed=[];
+ function restorePrint(){closed.forEach(d=>d.open=false);closed=[];}
+ window.addEventListener('beforeprint',()=>{closed=[...root.querySelectorAll('details:not([open])')];closed.forEach(d=>d.open=true);});
+ window.addEventListener('afterprint',restorePrint);
+ document.querySelector('#print').addEventListener('click',()=>{try{window.print();}finally{restorePrint();}});
+ const initial=location.hash.slice(1);
+ show(ids.includes(initial)?initial:(stored?state.chapter:'overview'));
+})();
+</script></body></html>
