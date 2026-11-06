@@ -6,7 +6,11 @@
 
 ## 開き方
 
+**ブラウザで読む：[GitHub Pagesの教材](https://tanakoh1421.github.io/neural-network-basics/)**
+
 同じフォルダの **`ニューラルネットの基礎.html`** をSafariやChromeなどのブラウザで開いてください。本文・SVG模式図・用語検索・進捗保存を1ファイルにまとめています。インストールやインターネット接続は不要です。外部の出典リンクを開くときは接続が必要です。
+
+Pagesはオンラインで開く版です。オフラインで使う場合は単体HTMLをダウンロードしてください。公開版とローカルファイル版の読了記録は別に保存されます。
 
 ## 学習内容
 
@@ -46,6 +50,12 @@
 編集後、このフォルダで `python3 build.py` を実行します。Nodeや外部ライブラリは実行に不要です。
 
 HTTPで確認する場合：`python3 -m http.server 8767 --bind 127.0.0.1 --directory dist`。同じ場所とブラウザを使う場合は、ファイルURLとHTTPの保存領域が別である点に注意してください。
+
+## GitHub Pagesへの公開
+
+`.github/workflows/pages.yml` が `main` へのpushで実行されます。`python3 build.py` で編集用ソースからHTMLを生成し、`dist/` の内容をGitHub Pagesに公開します。GitHubのActions画面から手動実行もできます。
+
+リポジトリのSettings → Pagesの公開元は **GitHub Actions** です。本文を更新する場合は `src/` を編集してコミット・pushしてください。公開結果はActions画面で確認できます。
 
 ## 確認記録
 
